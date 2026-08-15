@@ -1,0 +1,81 @@
+minimol-onnx
+============
+
+
+This distribution combines Apache-2.0 licensed source code with MIT licensed
+model weights. The overall SPDX expression is `Apache-2.0 AND MIT`.
+
+  LICENSE       Apache License 2.0  -- applies to items 1 and 3 below
+  LICENSE-MIT   MIT License         -- applies to item 2 below
+
+
+1. Vendored featurizer  (Apache-2.0)
+------------------------------------
+
+    src/minimol_onnx/minimol_feat/
+
+Derived from `graphium` 2.4.7 (`graphium.features`), licensed under the
+Apache License, Version 2.0.
+
+    https://github.com/datamol-io/graphium
+
+    Copyright 2023 Valence Labs
+    Copyright 2023 Recursion Pharmaceuticals
+    Copyright 2023 Graphcore Limited
+
+CHANGES FROM THE ORIGINAL (Apache-2.0 section 4(b)):
+
+  * The dependency on the compiled extensions `torch-scatter`, `torch-sparse`
+    and `torch-cluster` was removed. The single scatter operation on the
+    featurization path -- `scatter_add` in `rw.py`, computing node out-degrees
+    for RWSE -- is served by `pure_scatter.py`, a pure-PyTorch module added by
+    this project (see item 3).
+  * Feature paths not reached by MiniMol v1 featurization were dropped.
+  * Imports were rewritten to be package-relative.
+
+Numerical output is unchanged: fingerprints match stock MiniMol to 6.4e-6 max
+absolute difference across 300 molecules of 1-190 atoms.
+
+
+2. Model weights and featurization config  (MIT)
+------------------------------------------------
+
+    src/minimol_onnx/minimol_v1.onnx
+    src/minimol_onnx/featurization_kwargs.json
+
+Exported from MiniMol v1 (`minimol` 1.3.5), licensed under the MIT License.
+
+    Copyright (c) 2024 Graphcore Ltd.
+    https://github.com/graphcore-research/minimol
+    https://pypi.org/project/minimol/
+
+The ONNX graph is a re-export of the published `minimol_v1` checkpoint. The
+learned parameters are unchanged; only the execution format differs. It covers
+the encoder, pre-NN, edge pre-NN, GNN and max-pooling stages -- the portion of
+`Minimol.__call__` that is neural network. Featurization is not part of the
+graph and runs in Python (item 1). `featurization_kwargs.json` is the
+featurization configuration read off the live model.
+
+Please cite the original work:
+
+    MiniMol: A Parameter-Efficient Foundation Model for Molecular Learning
+    Kerstin Kläser, Błażej Banaszewski, Samuel Maddrell-Mander, Callum McLean,
+    Luis Müller, Ali Parviz, Shenyang Huang, Andrew Fitzgibbon
+    arXiv preprint arXiv:2404.14986
+    https://arxiv.org/abs/2404.14986
+
+
+3. New work  (Apache-2.0)
+-------------------------
+
+    src/minimol_onnx/__init__.py
+    src/minimol_onnx/runtime.py
+    src/minimol_onnx/minimol_feat/pure_scatter.py
+    export/
+    tests/
+
+`pure_scatter.py` is an original implementation built on native
+`torch.Tensor.scatter_add_` and `scatter_reduce_`, written to be
+call-compatible with the subset of the `torch_scatter` API that graphium uses
+(`torch_scatter` is MIT, Copyright (c) Matthias Fey). No `torch_scatter` code
+was copied.

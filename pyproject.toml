@@ -1,0 +1,83 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "minimol-onnx"
+dynamic = ["version"]
+description = "MiniMol molecular fingerprints as a self-contained ONNX model -- no graphium, no compiled graph extensions, no version pins"
+readme = "README.md"
+# Apache-2.0 for the vendored graphium featurizer and the new code;
+# MIT for the exported minimol weights. See NOTICE for the breakdown.
+license = "Apache-2.0 AND MIT"
+license-files = ["LICENSE", "LICENSE-MIT", "NOTICE"]
+requires-python = ">=3.10"
+keywords = [
+    "minimol",
+    "onnx",
+    "molecular-fingerprints",
+    "cheminformatics",
+    "drug-discovery",
+    "graph-neural-network",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+
+# Deliberately unpinned. The point of this package is that it runs against
+# current everything -- it is verified on torch 2.13, numpy 2.4, scipy 1.17,
+# pandas 3.0, onnxruntime 1.28. Upper caps would recreate the dependency
+# pain that exporting to ONNX removed.
+dependencies = [
+    "onnxruntime",
+    "numpy",
+    "scipy",
+    "pandas",
+    "networkx",
+    "loguru",
+    "rdkit",
+    "datamol",
+    "torch",
+    "torch-geometric",
+]
+
+[project.optional-dependencies]
+# MinimolONNX(providers=[...]) accepts any execution provider onnxruntime offers.
+gpu = ["onnxruntime-gpu"]
+dev = ["pytest>=7", "build", "twine"]
+
+[project.urls]
+Homepage = "https://github.com/a-pouplin/minimol-onnx"
+Repository = "https://github.com/a-pouplin/minimol-onnx"
+Issues = "https://github.com/a-pouplin/minimol-onnx/issues"
+
+[tool.hatch.version]
+path = "src/minimol_onnx/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/minimol_onnx"]
+
+# The sdist carries the export pipeline and the reference fixtures so the
+# whole result is reproducible from source; the wheel carries neither.
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/export",
+    "/README.md",
+    "/LICENSE",
+    "/LICENSE-MIT",
+    "/NOTICE",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

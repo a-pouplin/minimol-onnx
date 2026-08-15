@@ -1,0 +1,46 @@
+{
+  "add_self_loop": false,
+  "atom_property_list_float": [
+    "degree",
+    "formal-charge",
+    "radical-electron",
+    "aromatic",
+    "in-ring"
+  ],
+  "atom_property_list_onehot": [
+    "atomic-number",
+    "group",
+    "period",
+    "total-valence"
+  ],
+  "edge_property_list": [
+    "bond-type-onehot",
+    "stereo",
+    "in-ring"
+  ],
+  "explicit_H": false,
+  "pos_encoding_as_features": {
+    "pos_types": {
+      "lap_eigval": {
+        "disconnected_comp": true,
+        "normalization": "none",
+        "num_pos": 8,
+        "pos_level": "node",
+        "pos_type": "laplacian_eigval"
+      },
+      "lap_eigvec": {
+        "disconnected_comp": true,
+        "normalization": "none",
+        "num_pos": 8,
+        "pos_level": "node",
+        "pos_type": "laplacian_eigvec"
+      },
+      "rw_pos": {
+        "ksteps": 16,
+        "pos_level": "node",
+        "pos_type": "rw_return_probs"
+      }
+    }
+  },
+  "use_bonds_weights": false
+}
