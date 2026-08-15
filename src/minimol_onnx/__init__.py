@@ -9,4 +9,4 @@
 from .runtime import FINGERPRINT_DIM, MinimolONNX
 
 __all__ = ["MinimolONNX", "FINGERPRINT_DIM"]
-__version__ = "0.1.0"
+__version__ = "0.1.1"
